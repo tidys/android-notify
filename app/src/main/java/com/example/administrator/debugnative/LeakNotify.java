@@ -29,6 +29,11 @@ public class LeakNotify {
         return instance;
     }
 
+    public void updateViewButton(RemoteViews views, boolean clickStart) {
+        views.setViewVisibility(R.id.start, clickStart ? View.GONE : View.VISIBLE);
+        views.setViewVisibility(R.id.end, clickStart ? View.VISIBLE : View.GONE);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void show(Context context) {
         final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.notify);
@@ -37,30 +42,21 @@ public class LeakNotify {
         final int notifyID = 1;
         final Notification.Builder builder = new Notification.Builder(context, channel);
 
-        Runnable ff=()->{
-            System.out.println("11");
-        };
-
         BroadcastReceiver buttonReceiver = new BroadcastReceiver() {
 
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 if (action.equals(LeakNotify.ACTION_START)) {
-                    Toast.makeText(context, "111", Toast.LENGTH_LONG).show();
-                    views.setTextViewText(R.id.text, "start");
 
-                    views.setViewVisibility(R.id.start, View.GONE);
-                    views.setViewVisibility(R.id.end, View.VISIBLE);
+                    LeakNotify.this.updateViewButton(views, true);
+                    views.setTextViewText(R.id.text, "check leak ...");
 
                 } else if (action.equals(LeakNotify.ACTION_END)) {
-                    Toast.makeText(context, "end", Toast.LENGTH_LONG).show();
-                    views.setTextViewText(R.id.text, "end");
+                    Toast.makeText(context, stringFromJNI(), Toast.LENGTH_LONG).show();
+                    views.setTextViewText(R.id.text, "generate leak_report.txt");
 
-
-                    views.setViewVisibility(R.id.start, View.VISIBLE);
-                    views.setViewVisibility(R.id.end, View.GONE);
-
+                    LeakNotify.this.updateViewButton(views, false);
                 }
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
                 notificationManager.notify(notifyID, builder.build());
@@ -75,6 +71,8 @@ public class LeakNotify {
         views.setOnClickPendingIntent(R.id.start, PendingIntent.getBroadcast(context, 0, new Intent(LeakNotify.ACTION_START), 0));
         views.setOnClickPendingIntent(R.id.end, PendingIntent.getBroadcast(context, 0, new Intent(LeakNotify.ACTION_END), 0));//为啥这个无法响应
 
+        this.updateViewButton(views, false);
+        views.setTextViewText(R.id.text, "perform memory leak check");
 
         builder.setOngoing(true)
                 .setWhen(System.currentTimeMillis())
@@ -85,4 +83,6 @@ public class LeakNotify {
         notificationManager.createNotificationChannel(notificationChannel);
         notificationManager.notify(notifyID, builder.build());
     }
+
+    public native String stringFromJNI();
 }

@@ -11,3 +11,14 @@ Java_com_example_administrator_debugnative_MainActivity_stringFromJNI(
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 }
+
+extern "C"
+JNIEXPORT jstring
+
+JNICALL
+Java_com_example_administrator_debugnative_LeakNotify_stringFromJNI(
+        JNIEnv *env,
+        jobject /* this */) {
+    std::string hello = "123";
+    return env->NewStringUTF(hello.c_str());
+}

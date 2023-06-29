@@ -42,11 +42,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "按钮被点击了", Toast.LENGTH_SHORT).show();
             }
         });
-        LeakNotify.getInstance().show(this);
+        if (BuildConfig.DEBUG) {
+            LeakNotify.getInstance().show(this);
+
+        }
     }
-
-
-
 
 
     /**
