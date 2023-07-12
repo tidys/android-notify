@@ -16,6 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<!--        <receiver android:name="MyBroadcastReceiver">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.SCREEN_ON"></action>-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
     </application>
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

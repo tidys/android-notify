@@ -25,11 +25,22 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
+    private void initBroadcastReceiver() {
+        String action = String.format("%s.leak", this.getPackageName());
+        MyBroadcastReceiver receiver = new MyBroadcastReceiver(action);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(action);
+        this.registerReceiver(receiver, intentFilter);
+    }
+
     @Override
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.initBroadcastReceiver();
+
+
 //        FloatView.getInstance(this).show();
         // Example of a call to a native method
         TextView tv = (TextView) findViewById(R.id.sample_text);
@@ -39,11 +50,12 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "按钮被点击了", Toast.LENGTH_SHORT).show();
+                testMalloc();
+                Toast.makeText(MainActivity.this, "yes", Toast.LENGTH_SHORT).show();
             }
         });
         if (BuildConfig.DEBUG) {
-            LeakNotify.getInstance().show(this);
+            //LeakNotify.getInstance().show(this);
 
         }
     }
@@ -54,4 +66,6 @@ public class MainActivity extends AppCompatActivity {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+
+    public native void testMalloc();
 }
